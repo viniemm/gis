@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InterestPoints.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gis.git</a> &gt; <a href="index.source.html" class="el_package">xgis</a> &gt; <span class="el_source">InterestPoints.java</span></div><h1>InterestPoints.java</h1><pre class="source lang-java linenums">package xgis;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Predicate;
+
+public class InterestPoints&lt;M&gt; {
+
+	private final BiDimensionalMap&lt;InterestPoint&lt;M&gt;&gt; points;
+
+<span class="nc" id="L13">	private InterestPoints(Builder&lt;M&gt; builder) {</span>
+<span class="nc" id="L14">		this.points = builder.points;</span>
+<span class="nc" id="L15">	}</span>
+
+	public final Collection&lt;InterestPoint&lt;M&gt;&gt; get(Coordinate coordinate) {
+<span class="nc" id="L18">		Objects.requireNonNull(coordinate);</span>
+		try {
+<span class="nc" id="L20">			return points.get(coordinate);</span>
+<span class="nc" id="L21">		} catch (NullPointerException e) {</span>
+<span class="nc" id="L22">			System.out.println(&quot;The value of either x or y in the coordinate is null&quot;);</span>
+<span class="nc" id="L23">			return null;</span>
+		}
+	}
+
+	public final List&lt;Collection&lt;InterestPoint&lt;M&gt;&gt;&gt; interestPoints() {
+<span class="nc" id="L28">		List&lt;Coordinate&gt; sortedCoordinates = points.coordinateSet();</span>
+<span class="nc" id="L29">		List&lt;Collection&lt;InterestPoint&lt;M&gt;&gt;&gt; result = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L30" title="All 2 branches missed.">		for (Coordinate c : sortedCoordinates) {</span>
+<span class="nc" id="L31">			result.add(get(c));</span>
+<span class="nc" id="L32">		}</span>
+<span class="nc" id="L33">		return result;</span>
+	}
+
+	public final long count(RectilinearRegion region, M marker) {
+<span class="nc" id="L37">		long result = 0;</span>
+<span class="nc" id="L38">		Predicate&lt;InterestPoint&lt;M&gt;&gt; predicate = x -&gt; x.hasMarker(marker);</span>
+
+<span class="nc bnc" id="L40" title="All 2 branches missed.">		for (Rectangle rectangle : region.getRectangles()) {</span>
+<span class="nc" id="L41">			BiDimensionalMap&lt;InterestPoint&lt;M&gt;&gt; bd = points.slice(rectangle);</span>
+<span class="nc" id="L42">			result += bd.collectionSize(predicate);</span>
+<span class="nc" id="L43">		}</span>
+<span class="nc" id="L44">		return result;</span>
+	}
+
+	@Override
+	public String toString() {
+<span class="nc" id="L49">		return &quot;InterestPoints{&quot; +</span>
+			&quot;points=&quot; + points +
+			'}';
+	}
+
+<span class="fc" id="L54">	public static class Builder&lt;M&gt; {</span>
+<span class="fc" id="L55">		private final BiDimensionalMap&lt;InterestPoint&lt;M&gt;&gt; points = new BiDimensionalMap&lt;&gt;();</span>
+
+		public final boolean add(InterestPoint&lt;M&gt; interestPoint) {
+<span class="nc" id="L58">			interestPoint.validate();</span>
+<span class="nc" id="L59">			BiDimensionalMap&lt;M&gt;.Updater up = (BiDimensionalMap&lt;M&gt;.Updater) points.getUpdater();</span>
+<span class="nc" id="L60">			up.setCoordinate(interestPoint.coordinate());</span>
+<span class="nc" id="L61">			up.addValue(interestPoint.marker());</span>
+<span class="nc" id="L62">			up.add();</span>
+<span class="nc" id="L63">			return true;</span>
+		}
+
+		public final InterestPoints&lt;M&gt; build() {
+<span class="nc" id="L67">			return new InterestPoints&lt;M&gt;(this);</span>
+		}
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
