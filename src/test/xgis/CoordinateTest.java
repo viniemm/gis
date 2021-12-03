@@ -95,8 +95,6 @@ public class CoordinateTest {
 	@Test
 	public void testToSimpleString() throws Exception {
 		Coordinate c = new Coordinate(new BigDecimal(3), new BigDecimal(7));
-		String s = c.toSimpleString();
-		System.out.print(s);
-		assertEquals(s, "(3,7)");
+		assertEquals("(3,7)", c.toSimpleString());
 	}
 }

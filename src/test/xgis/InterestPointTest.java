@@ -46,9 +46,7 @@ public class InterestPointTest {
 	public void testToString() throws Exception {
 		Coordinate c1 = new Coordinate(new BigDecimal(2), new BigDecimal(3));
 		InterestPoint<String> ip = new InterestPoint<>(c1, "School");
-		String s = ip.toString();
-		System.out.println(s);
-		assertEquals(s, "(2,3):School");
+		assertEquals(ip.toString(), "(2,3) : School");
 	}
 
 	/**

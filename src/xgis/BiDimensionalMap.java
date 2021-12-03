@@ -6,7 +6,8 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
- * The type Bi dimensional map.
+ * The type Bi dimensional map. This is a data type that stores a collection of generic type in a 2 dimensional cartesian plane.
+ * This is the primary data-type we will use tio store points in our GIS.
  *
  * @param <T> generic object to be stored in the collection.
  * @author Vinayak Mathur vxm167
@@ -16,10 +17,12 @@ public final class BiDimensionalMap<T> {
 	private final SortedMap<BigDecimal, SortedMap<BigDecimal, Collection<T>>> points = new TreeMap<>();
 
 	/**
-	 * Instantiates a new Bi dimensional map.
+	 * Instantiates a new Bi dimensional map using the given collection of x and y coordinates.
+	 * A point is placed on every combination of these coordinates.
+	 * The total number of points will be the product of the number of x coordinates and y coordinates.
 	 *
-	 * @param xCoord the x coord
-	 * @param yCoord the y coord
+	 * @param xCoord the collection of x coordinates.
+	 * @param yCoord the collection of y coordinates.
 	 */
 	BiDimensionalMap(Collection<BigDecimal> xCoord, Collection<BigDecimal> yCoord) {
 		Objects.requireNonNull(xCoord, "xCoord cannot be null");
@@ -34,17 +37,17 @@ public final class BiDimensionalMap<T> {
 	}
 
 	/**
-	 * Instantiates a new Bi dimensional map.
+	 * Instantiates a new empty Bi dimensional map.
 	 */
 	BiDimensionalMap() {
 	}
 
 	/**
-	 * Get collection.
+	 * Returns the collection at the given coordinate of x and y values
 	 *
-	 * @param x the x
-	 * @param y the y
-	 * @return the collection
+	 * @param x x value
+	 * @param y y value
+	 * @return the collection at (x,y)
 	 */
 	public final Collection<T> get(BigDecimal x, BigDecimal y) {
 		Objects.requireNonNull(x, "value of x cannot be null");
@@ -53,10 +56,10 @@ public final class BiDimensionalMap<T> {
 	}
 
 	/**
-	 * Get collection.
+	 * Returns the collection at the given coordinate.
 	 *
 	 * @param coordinate the coordinate
-	 * @return the collection
+	 * @return the collection at the provided coordinate.
 	 */
 	public final Collection<T> get(Coordinate coordinate) {
 		Objects.requireNonNull(coordinate, "Coordinate cannot be null");
@@ -64,19 +67,18 @@ public final class BiDimensionalMap<T> {
 	}
 
 	/**
-	 * X set set.
+	 * xSet returns all the values of x in the Bi-Dimensional map
 	 *
-	 * @return the set
+	 * @return the set of all x coordinates
 	 */
 	public final Set<BigDecimal> xSet() {
 		return points.keySet();
 	}
 
 	/**
-	 * Y set set.
+	 * ySet returns all the values of x in the given y coordinate of Bi-Dimensional map
 	 *
-	 * @param x the x
-	 * @return the set
+	 * @return the set of all y coordinates at x.
 	 */
 	public final Set<BigDecimal> ySet(BigDecimal x) {
 		Objects.requireNonNull(x, "x cannot be null");
@@ -87,9 +89,9 @@ public final class BiDimensionalMap<T> {
 	}
 
 	/**
-	 * Coordinate set list.
+	 * Return a collection of all the points in the map where there exists a valid collection.
 	 *
-	 * @return the list
+	 * @return the list of coordinates.
 	 */
 	public final List<Coordinate> coordinateSet() {
 		List<Coordinate> result = new ArrayList<>();

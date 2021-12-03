@@ -97,6 +97,15 @@ public class InterestPoints<M> {
 			return true;
 		}
 
+		public final boolean addAll(Collection<InterestPoint<M>> interestPoints) {
+			for (InterestPoint<M> ip : interestPoints) {
+				if (!add(ip)) {
+					return false;
+				}
+			}
+			return true;
+		}
+
 		/**
 		 * Build interest points.
 		 *

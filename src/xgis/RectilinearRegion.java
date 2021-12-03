@@ -21,6 +21,9 @@ public class RectilinearRegion {
 	 * @param rectangles the rectangles
 	 */
 	RectilinearRegion(Set<Rectangle> rectangles) {
+		for (Rectangle rect : rectangles) {
+			rect.validate();
+		}
 		this.rectangles = new HashSet<>(rectangles);
 	}
 

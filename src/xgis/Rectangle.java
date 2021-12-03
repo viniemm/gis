@@ -87,7 +87,7 @@ public record Rectangle(Coordinate bottomLeft, Coordinate topRight) {
 	 *
 	 * @return the set
 	 */
-	final Set<Coordinate> allCorners() {
+	public final Set<Coordinate> allCorners() {
 		Set<Coordinate> result = new HashSet<>();
 		result.add(bottomLeft());
 		result.add(bottomRight());
@@ -98,11 +98,7 @@ public record Rectangle(Coordinate bottomLeft, Coordinate topRight) {
 
 	@Override
 	public String toString() {
-		String result = "";
-		result += "topLeft : " + "(" + top().toPlainString() + "," + left().toPlainString() + ")"
-			+ "topRight : " + "(" + top().toPlainString() + "," + right().toPlainString() + ")\n";
-		result += "bottomLeft : " + "(" + bottom().toPlainString() + "," + left().toPlainString() + ")"
-			+ "bottomRight : " + "(" + bottom().toPlainString() + "," + right().toPlainString() + ")\n";
-		return result;
+		return topLeft().toSimpleString() + "\t" + this.topRight().toSimpleString() + "\n" +
+			this.bottomLeft().toSimpleString() + "\t" + bottomRight().toSimpleString();
 	}
 }
