@@ -1,10 +1,8 @@
-package xgis.test;
+package xgis;
 
 import org.junit.Test;
 import org.junit.Before;
 import org.junit.After;
-import xgis.Coordinate;
-import xgis.InterestPoint;
 
 import static org.junit.Assert.*;
 

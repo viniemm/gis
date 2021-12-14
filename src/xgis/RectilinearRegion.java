@@ -6,37 +6,29 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * The type Rectilinear region.
+ * The type Rectilinear region is a data structure that consists of a set of non-overlapping rectangles.
  */
 public class RectilinearRegion {
 
 	/**
-	 * The Rectangles.
+	 * The set of rectangles.
 	 */
 	public final Set<Rectangle> rectangles;
 
-	/**
-	 * Instantiates a new Rectilinear region.
-	 *
-	 * @param rectangles the rectangles
-	 */
 	RectilinearRegion(Set<Rectangle> rectangles) {
-		for (Rectangle rect : rectangles) {
-			rect.validate();
-		}
 		this.rectangles = new HashSet<>(rectangles);
 	}
 
 	/**
-	 * Gets rectangles.
+	 * Getter method to return the set of rectangles.
 	 *
-	 * @return the rectangles
+	 * @return the set of rectangles
 	 */
 	public Set<Rectangle> getRectangles() {
 		return rectangles;
 	}
 
-	private BiDimensionalMap<Rectangle> rectangleMap() {
+	BiDimensionalMap<Rectangle> rectangleMap() {
 		Set<BigDecimal> xCoord = new HashSet<>();
 		Set<BigDecimal> yCoord = new HashSet<>();
 		for (Rectangle rect : rectangles) {
@@ -65,28 +57,31 @@ public class RectilinearRegion {
 	/**
 	 * Is overlapping boolean.
 	 *
-	 * @return the boolean
+	 * @return the true if any of the rectangles overlap.
 	 */
 	public boolean isOverlapping() {
-		boolean result = false;
 		for (Rectangle rectangle : rectangles) {
 			for (Rectangle toTest : rectangles) {
-				if (!Objects.equals(rectangle, toTest)) {
-					result = checkInside(rectangle, toTest);
+				if (!Objects.equals(rectangle, toTest) && checkInside(rectangle, toTest)) {
+					return true;
 				}
 			}
 		}
-		return result;
+		return false;
 	}
 
 	/**
-	 * Of rectilinear region.
+	 * Generates and returns a rectilinear region using the given set of rectangles.
+	 * The rectangles cannot overlap each other, or it throws an IllegalArgumentException.
 	 *
-	 * @param rectangles the rectangles
-	 * @return the rectilinear region
+	 * @param rectangles the set rectangles from which to construct the rectilinear region
+	 * @return the rectilinear region constructed by the set of non-overlapping rectangles
 	 */
 	public static final RectilinearRegion of(Set<Rectangle> rectangles) {
 		Objects.requireNonNull(rectangles, "set of rectangles cannot be null");
+		rectangles.forEach((rect) -> {
+			rect.validate();
+		});
 		RectilinearRegion rr = new RectilinearRegion(rectangles);
 		if (rr.isOverlapping()) {
 			throw new IllegalArgumentException("Set of rectangles cannot intercept");

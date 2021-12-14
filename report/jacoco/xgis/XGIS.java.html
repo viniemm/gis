@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>XGIS.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gis.git</a> &gt; <a href="index.source.html" class="el_package">xgis</a> &gt; <span class="el_source">XGIS.java</span></div><h1>XGIS.java</h1><pre class="source lang-java linenums">package xgis;
+
+
+import java.math.BigDecimal;
+import java.util.*;
+
+/**
+ * The class XGIS extends the functionality of class RectilinearRegion. XGIS determines if the given RectilinearRegion
+ * has any connected rectangles or not. A pair of connected rectangles will have at least one common side.
+ */
+public class XGIS extends RectilinearRegion {
+
+	/**
+	 * Instantiates a new Xgis with a set of Rectangles.
+	 *
+	 * @param rectangles the set of rectangles
+	 */
+	public XGIS(Set&lt;Rectangle&gt; rectangles) {
+<span class="fc" id="L19">		super(rectangles);</span>
+<span class="fc" id="L20">	}</span>
+
+	/**
+	 * Instantiates a new Xgis with an instance of RectilinearRegion.
+	 *
+	 * @param rectRegion an instance of RectilinearRegion;
+	 */
+	public XGIS(RectilinearRegion rectRegion) {
+<span class="fc" id="L28">		super(rectRegion.getRectangles());</span>
+<span class="fc" id="L29">	}</span>
+
+	/**
+	 * IsConnected is the primary method of this extended class.
+	 * A pair of connected rectangles will have at least one common side.
+	 *
+	 * @return boolean True if there exists a pair of connected rectangles else returns False.
+	 */
+	public boolean isConnected() {
+<span class="fc" id="L38">		List&lt;Line&gt; lines = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L39">		getRectangles().forEach((n) -&gt; {</span>
+<span class="fc" id="L40">			lines.addAll(n.allSides());</span>
+<span class="fc" id="L41">		});</span>
+<span class="fc" id="L42">		List&lt;Coordinate&gt; corners = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L43">		getRectangles().forEach((n) -&gt; {</span>
+<span class="fc" id="L44">			corners.addAll(n.allCorners());</span>
+<span class="fc" id="L45">		});</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">		for (Coordinate c : corners) {</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">			for (Line l : lines) {</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">				if(l.in(c))</span>
+<span class="fc" id="L49">					return true;</span>
+<span class="fc" id="L50">			}</span>
+<span class="fc" id="L51">		}</span>
+<span class="fc" id="L52">		return false;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,7 +1,6 @@
-package xgis.test;
+package xgis;
 
 import org.junit.Test;
-import xgis.Coordinate;
 
 import static org.junit.Assert.*;
 

@@ -2,17 +2,19 @@ package xgis;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
- * The type Bi dimensional map. This is a data type that stores a collection of generic type in a 2 dimensional cartesian plane.
- * This is the primary data-type we will use tio store points in our GIS.
+ * The type Bi dimensionalMap is a data type that stores a collection of generic type in a 2 dimensional cartesian plane.
+ * This is the primary data-type we will use it to store points in our GIS.
  *
  * @param <T> generic object to be stored in the collection.
  * @author Vinayak Mathur vxm167
  */
 public final class BiDimensionalMap<T> {
+
 
 	private final SortedMap<BigDecimal, SortedMap<BigDecimal, Collection<T>>> points = new TreeMap<>();
 
@@ -67,7 +69,7 @@ public final class BiDimensionalMap<T> {
 	}
 
 	/**
-	 * xSet returns all the values of x in the Bi-Dimensional map
+	 * xSet returns the collection of x coordinates in the map
 	 *
 	 * @return the set of all x coordinates
 	 */
@@ -76,8 +78,10 @@ public final class BiDimensionalMap<T> {
 	}
 
 	/**
-	 * ySet returns all the values of x in the given y coordinate of Bi-Dimensional map
+	 * ySet returns  the  set  of  y  coordinates  corresponding  to  the
+	 * given value of x (or an empty set if no such y value exists)
 	 *
+	 * @param x the x
 	 * @return the set of all y coordinates at x.
 	 */
 	public final Set<BigDecimal> ySet(BigDecimal x) {
@@ -89,7 +93,7 @@ public final class BiDimensionalMap<T> {
 	}
 
 	/**
-	 * Return a collection of all the points in the map where there exists a valid collection.
+	 * Returns the list of coordinates sorted by their compareTo.
 	 *
 	 * @return the list of coordinates.
 	 */
@@ -114,49 +118,88 @@ public final class BiDimensionalMap<T> {
 		for (BigDecimal x : xSet) {
 			Set<BigDecimal> ySet = this.ySet(x);
 			for (BigDecimal y : ySet) {
-				result.append("(").append(x.toPlainString()).append(",").append(y.toPlainString()).append("):").append(points.get(x).get(y).toString()).append("\n");
+				result.append("(");
+				result.append(x.toPlainString());
+				result.append(",");
+				result.append(y.toPlainString());
+				result.append("):");
+				result.append(points.get(x).get(y).toString());
+				result.append("\n");
 			}
 		}
 		return result.toString();
 	}
 
-	// Helper method that returns the entire collection
-	private Collection<T> fullCollection() {
-		Collection<T> result = new ArrayList<>();
+	/**
+	 * Helper method that returns the entire collection
+	 *
+	 * @return collection of all points
+	 */
+//	public final List<Collection<T>> collectionList() {
+//
+//	}
+
+	/**
+	 * Helper method that returns the entire collection
+	 *
+	 * @return collection of all points
+	 */
+	Collection<InterestPoint<T>> fullCollection() {
+		Collection<InterestPoint<T>> result = new ArrayList<>();
 		Set<BigDecimal> xKeys = xSet();
-		for (BigDecimal xKey : xKeys) {
-			Set<BigDecimal> yKeys = ySet(xKey);
-			for (BigDecimal yKey : yKeys) {
-				result.addAll(points.get(xKey).get(yKey));
-			}
-		}
+		xSet().forEach(x -> {
+			ySet(x).forEach(y -> {
+				points.get(x).get(y).forEach(marker -> {
+					result.add(new InterestPoint<T>(new Coordinate(x, y), marker));
+				});
+			});
+		});
 		return result;
 	}
 
 	/**
-	 * Collection size long.
+	 * Returns the number of elements in this collection.
+	 * If this collection contains more than Integer.MAX_VALUE elements, returns Integer.MAX_VALUE.
 	 *
-	 * @return the long
+	 * @return the number of elements in this collection
 	 */
 	public final long collectionSize() {
-		Collection<T> fullC = fullCollection();
+		Collection<InterestPoint<T>> fullC = fullCollection();
 		return fullC.size();
 	}
 
 	/**
-	 * Collection size long.
+	 * Returns the number of entries that are stored throughout the map and that satisfy the given predicate.
+	 * If this collection contains more than Integer.MAX_VALUE elements, returns Integer.MAX_VALUE.
 	 *
-	 * @param filter the filter
-	 * @return the long
+	 * @param filter the predicate
+	 * @return number of entries that satisfy the predicate
 	 */
 	public final long collectionSize(Predicate<? super T> filter) {
 		Objects.requireNonNull(filter, "filter cannot be null");
-		Collection<T> fullC = fullCollection();
-		return fullC.stream().filter(filter).count();
+		Collection<InterestPoint<T>> fullC = fullCollection();
+		AtomicLong result = new AtomicLong();
+		int i = 0;
+		List<InterestPoint<T>> arr = new ArrayList<>();
+		fullC.forEach((ip) -> {
+			arr.add(ip);
+			if (arr.stream().anyMatch((e) -> e.marker().equals(filter))) {
+				result.addAndGet(1);
+			}
+			arr.clear();
+		});
+//		for (InterestPoint<T> ip : fullC) {
+//			arr.add(ip);
+//			if (arr.stream().anyMatch((e) -> e.marker().equals(filter))) {
+//				result++;
+//			}
+//			arr.clear();
+//		}
+		return result.get();
 	}
 
 	/**
-	 * Gets updater.
+	 * Returns an instance of BiDimensionalMap.Updater
 	 *
 	 * @return the updater
 	 */
@@ -175,19 +218,20 @@ public final class BiDimensionalMap<T> {
 	 * Slice bi dimensional map.
 	 *
 	 * @param rectangle the rectangle
-	 * @return the bi dimensional map
+	 * @return BiDimensionalMap
 	 */
 	public final BiDimensionalMap<T> slice(Rectangle rectangle) {
 		Objects.requireNonNull(rectangle, "rectangle cannot be null");
 		BiDimensionalMap<T> result = new BiDimensionalMap<>();
 		Updater up = result.getUpdater();
-		for (BigDecimal x : xSet()) {
-			if (x.compareTo(rectangle.left()) >= 0 && x.compareTo(rectangle.right()) < 0) {
-				for (BigDecimal y : ySet(x)) {
-					compareInner(x, y, rectangle, up);
-				}
+		for (Coordinate c : coordinateSet()) {
+			if (rectangle.inside(c)) {
+				up.setCoordinate(c);
+				up.setValues(get(c));
+				up.add();
 			}
 		}
+		System.out.println("Heres the slice\n" + result.toString());
 		return result;
 	}
 

@@ -1,14 +1,8 @@
-package xgis.test;
+package xgis;
 
 import org.junit.Test;
-import xgis.InterestPoints;
-import xgis.InterestPoint;
-import xgis.Coordinate;
 
-import java.util.Random;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.math.BigDecimal;
 
 import static org.junit.Assert.*;
@@ -48,15 +42,28 @@ public class InterestPointsTest {
 		built.interestPoints();
 	}
 
+	private Set<Rectangle> helper2() {
+		Rectangle rect = new Rectangle(
+			new Coordinate(
+				new BigDecimal(-30), new BigDecimal(-30)),
+			new Coordinate(
+				new BigDecimal(30), new BigDecimal(30)));
+		Set<Rectangle> res = new HashSet<>();
+		res.add(rect);
+		return res;
+	}
+
 	/**
 	 * Method: count(RectilinearRegion region, M marker)
 	 */
 	@Test
 	public void testCount() throws Exception {
+//		TODO: Error for some reason?
 		InterestPoints.Builder<String> build = helper1();
 		build.addAll(interestPoints);
 		InterestPoints<String> built = build.build();
-		built.interestPoints();
+		System.out.println(built.toString());
+		assertEquals( 2, built.count(new RectilinearRegion(helper2()), "School"));
 	}
 
 	/**
@@ -74,16 +81,15 @@ public class InterestPointsTest {
 
 	private InterestPoints.Builder<String> helper1() {
 		InterestPoints.Builder<String> build = new InterestPoints.Builder<>();
-		//List<Coordinate> coordinates = new ArrayList<>();
+		List<InterestPoint<String>> ips = new ArrayList<>();
+		ips.add(new InterestPoint<>(new Coordinate(new BigDecimal(-7), new BigDecimal(4)), "School"));
+		ips.add(new InterestPoint<>(new Coordinate(new BigDecimal(5), new BigDecimal(2)), "School"));
+		ips.add(new InterestPoint<>(new Coordinate(new BigDecimal(5), new BigDecimal(2)), "Office"));
+		ips.add(new InterestPoint<>(new Coordinate(new BigDecimal(-7), new BigDecimal(4)), "Home"));
+		ips.add(new InterestPoint<>(new Coordinate(new BigDecimal(3), new BigDecimal(3)), "Playground"));
+		ips.add(new InterestPoint<>(new Coordinate(new BigDecimal(-7), new BigDecimal(4)), "Police Station"));
 		interestPoints = new ArrayList<>();
-		int[] randX = new Random().ints(20, -7, 8).toArray();
-		int[] randY = new Random().ints(20, -7, 8).toArray();
-		String[] markers = {"School", "Police Station", "Home", "Office", "Playground", "Post Office"};
-		for (int i = 0; i < 20; i++) {
-			//coordinates.add(new Coordinate(new BigDecimal(randX[i]), new BigDecimal(randY[i])));
-			InterestPoint<String> ip = new InterestPoint<>(new Coordinate(new BigDecimal(randX[i]), new BigDecimal(randY[i])), markers[i % 5]);
-			interestPoints.add(ip);
-		}
+		interestPoints.addAll(ips);
 		return build;
 	}
 
@@ -92,7 +98,9 @@ public class InterestPointsTest {
 	 */
 	@Test
 	public void testAdd() throws Exception {
-		assertTrue(helper1().addAll(interestPoints));
+		InterestPoints.Builder<String> ipb = helper1();
+		assertTrue(ipb.addAll(interestPoints));
+		InterestPoints<String> ip = ipb.build();
 	}
 
 	/**

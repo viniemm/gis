@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InterestPoints.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gis.git</a> &gt; <a href="index.source.html" class="el_package">xgis</a> &gt; <span class="el_source">InterestPoints.java</span></div><h1>InterestPoints.java</h1><pre class="source lang-java linenums">package xgis;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Predicate;
+
+/**
+ * The public  final  class  InterestPoints stores a set of
+ * InterestPoints in the private final
+ * BiDimensionalMap&lt;InterestPoint&gt; points.
+ *
+ * @param &lt;M&gt; The type of object Marker.
+ */
+public class InterestPoints&lt;M&gt; {
+
+	private final BiDimensionalMap&lt;InterestPoint&lt;M&gt;&gt; points;
+
+<span class="fc" id="L20">	private InterestPoints(Builder&lt;M&gt; builder) {</span>
+<span class="fc" id="L21">		this.points = builder.points;</span>
+<span class="fc" id="L22">	}</span>
+
+	/**
+	 * Returns the collection of InterestPoint at the given coordinate.
+	 * If there is no InterestPoint at the given coordinate it returns null.
+	 *
+	 * @param coordinate the coordinate
+	 * @return the collection of interest points
+	 */
+	public final Collection&lt;InterestPoint&lt;M&gt;&gt; get(Coordinate coordinate) {
+<span class="fc" id="L32">		Objects.requireNonNull(coordinate);</span>
+		try {
+<span class="fc" id="L34">			return points.get(coordinate);</span>
+<span class="fc" id="L35">		} catch (NullPointerException e) {</span>
+<span class="fc" id="L36">			System.out.println(&quot;No collection found at &quot; + coordinate.toSimpleString());</span>
+<span class="fc" id="L37">			return null;</span>
+		}
+	}
+
+	/**
+	 * Returns all the interest points in the form of a list of collections.
+	 *
+	 * @return a list of collections of interest points.
+	 */
+	public final List&lt;Collection&lt;InterestPoint&lt;M&gt;&gt;&gt; interestPoints() {
+<span class="fc" id="L47">		List&lt;Coordinate&gt; sortedCoordinates = points.coordinateSet();</span>
+<span class="fc" id="L48">		List&lt;Collection&lt;InterestPoint&lt;M&gt;&gt;&gt; result = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">		for (Coordinate c : sortedCoordinates) {</span>
+<span class="fc" id="L50">			result.add(get(c));</span>
+<span class="fc" id="L51">		}</span>
+<span class="fc" id="L52">		return result;</span>
+	}
+
+	/**
+	 * Returns the number of interest points that are present in the given rectilinear region and have the given marker in them.
+	 *
+	 * @param region the rectilinear region
+	 * @param marker the marker
+	 * @return the number of points that obey the criteria.
+	 */
+	public final long count(RectilinearRegion region, M marker) {
+<span class="fc" id="L63">		long result = 0;</span>
+<span class="pc" id="L64">		Predicate&lt;InterestPoint&lt;M&gt;&gt; predicate = x -&gt; x.hasMarker(marker);</span>
+
+<span class="fc bfc" id="L66" title="All 2 branches covered.">		for (Rectangle rectangle : region.getRectangles()) {</span>
+<span class="fc" id="L67">			BiDimensionalMap&lt;InterestPoint&lt;M&gt;&gt; bd = points.slice(rectangle);</span>
+<span class="fc" id="L68">			result += bd.collectionSize(predicate);</span>
+<span class="fc" id="L69">		}</span>
+
+<span class="fc" id="L71">		return result;</span>
+	}
+
+	@Override
+	public String toString() {
+<span class="fc" id="L76">		return points.toString();</span>
+	}
+
+	/**
+	 * The type Builder.
+	 *
+	 * @param &lt;M&gt; the type parameter
+	 */
+<span class="fc" id="L84">	public static class Builder&lt;M&gt; {</span>
+<span class="fc" id="L85">		private final BiDimensionalMap&lt;InterestPoint&lt;M&gt;&gt; points = new BiDimensionalMap&lt;&gt;();</span>
+
+		/**
+		 * Adds the given interest point.
+		 *
+		 * @param interestPoint the interest point to be added to the BiDimensionalMap points.
+		 * @return true if successful or throws an exception.
+		 */
+		public final boolean add(InterestPoint&lt;M&gt; interestPoint) {
+<span class="fc" id="L94">			interestPoint.validate();</span>
+<span class="fc" id="L95">			BiDimensionalMap&lt;M&gt;.Updater up = (BiDimensionalMap&lt;M&gt;.Updater) points.getUpdater();</span>
+<span class="fc" id="L96">			up.setCoordinate(interestPoint.coordinate());</span>
+<span class="fc" id="L97">			up.addValue(interestPoint.marker());</span>
+<span class="fc" id="L98">			up.add();</span>
+<span class="fc" id="L99">			return true;</span>
+		}
+
+		/**
+		 * Adds all the given interest points in the collection.
+		 *
+		 * @param interestPoints the collection of interest points to be added to the BiDimensionalMap points.
+		 * @return true if successful or throws an exception.
+		 */
+		final boolean addAll(Collection&lt;InterestPoint&lt;M&gt;&gt; interestPoints) {
+<span class="fc bfc" id="L109" title="All 2 branches covered.">			for (InterestPoint&lt;M&gt; ip : interestPoints) {</span>
+<span class="fc" id="L110">				add(ip);</span>
+<span class="fc" id="L111">			}</span>
+<span class="fc" id="L112">			return true;</span>
+		}
+
+		/**
+		 * Build interest points and return an instance of this InterestPoints.
+		 *
+		 * @return this instance of InterestPoints.
+		 */
+		public final InterestPoints&lt;M&gt; build() {
+<span class="fc" id="L121">			return new InterestPoints&lt;M&gt;(this);</span>
+		}
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

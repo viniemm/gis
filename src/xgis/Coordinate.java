@@ -4,9 +4,9 @@ import java.math.BigDecimal;
 import java.util.Objects;
 
 /**
- * The type Coordinate.
+ * Coordinate is a record class that stores the x and y values for a given coordinate.
  *
- * @author Vinayak Mathur vxm167 Coordinate is a record class that stores the x and y values for a given coordinate.
+ * @author Vinayak Mathur vxm167
  */
 public record Coordinate(BigDecimal x, BigDecimal y) implements Comparable<Coordinate> {
 
@@ -52,8 +52,8 @@ public record Coordinate(BigDecimal x, BigDecimal y) implements Comparable<Coord
 	 * This Coordinate is considered lesser to another Coordinate if both x and y values are lesser.
 	 * Two Coordinates are considered equal if both x and y values are equal.
 	 * Two Coordinate objects that are not equal in value but are neither greater nor lesser are still considered equal are considered equal by this method.
-	 * This method is provided in preference to individual methods for each of the six boolean comparison operators (<, ==, >, >=, !=, <=).
-	 * The suggested idiom for performing these comparisons is: (x.compareTo(y) <op> 0), where <op> is one of the six comparison operators.
+	 * This method is provided in preference to individual methods for each of the six boolean comparison operators (&lt;, ==, &gt;, &gt;=, !=, &lt;=).
+	 * The suggested idiom for performing these comparisons is: (x.compareTo(y) &lt;op&gt; 0), where &lt;op&gt; is one of the six comparison operators.
 	 *
 	 * @param c Coordinate  to which this Coordinate is to be compared.
 	 * @return -1, 0, or 1 as this Coordinate is geographically less than, equal to, or greater than c.

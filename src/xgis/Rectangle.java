@@ -1,17 +1,16 @@
 package xgis;
 
 import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
- * The type Rectangle.
+ * The type Rectangle is a record class that accepts a bottom left amd top right coordinate and constructs a rectangle.
  */
 public record Rectangle(Coordinate bottomLeft, Coordinate topRight) {
 
 	/**
-	 * Validate rectangle.
+	 * Validates this rectangle and throws an exception if either the bottom left or top right coordinates are invalid.
+	 * Also throws an exception if bottom left >= top right.
 	 *
 	 * @return the rectangle
 	 */
@@ -28,9 +27,19 @@ public record Rectangle(Coordinate bottomLeft, Coordinate topRight) {
 	}
 
 	/**
-	 * Validate rectangle.
+	 * Checks whether the given argument coordinate lies within/inside this rectangle.
 	 *
-	 * @param rectangle the rectangle
+	 * @param coordinate the coordinate to be checked.
+	 * @return true if coordinate is inside this rectangle else false
+	 */
+	boolean inside(Coordinate coordinate) {
+		return coordinate.compareTo(bottomLeft) + coordinate.compareTo(topRight) == 0;
+	}
+
+	/**
+	 * Validates the given argument rectangle.
+	 *
+	 * @param rectangle the rectangle to be validated.
 	 * @return the rectangle
 	 */
 	public static final Rectangle validate(Rectangle rectangle) {
@@ -39,53 +48,63 @@ public record Rectangle(Coordinate bottomLeft, Coordinate topRight) {
 	}
 
 	/**
-	 * Left big decimal.
+	 * Returns the value of the left abscissa of this rectangle.
 	 *
-	 * @return the big decimal
+	 * @return the x value of bottomLeft.
 	 */
 	public final BigDecimal left() {
 		return bottomLeft.x();
 	}
 
 	/**
-	 * Right big decimal.
+	 * Returns the value of the right abscissa of this rectangle.
 	 *
-	 * @return the big decimal
+	 * @return the x value of topRight
 	 */
 	public final BigDecimal right() {
 		return topRight.x();
 	}
 
 	/**
-	 * Top big decimal.
+	 * Returns the value of the top ordinate of this rectangle.
 	 *
-	 * @return the big decimal
+	 * @return the y value of topRight
 	 */
 	public final BigDecimal top() {
 		return topRight.y();
 	}
 
 	/**
-	 * Bottom big decimal.
+	 * Returns the value of the bottom ordinate of this rectangle.
 	 *
-	 * @return the big decimal
+	 * @return the y value of bottomLeft
 	 */
 	public final BigDecimal bottom() {
 		return bottomLeft.y();
 	}
 
-	private Coordinate bottomRight() {
+	/**
+	 * Returns the bottom right coordinate of this rectangle.
+	 *
+	 * @return the coordinate bottomRight
+	 */
+	Coordinate bottomRight() {
 		return new Coordinate(right(), bottom());
 	}
 
-	private Coordinate topLeft() {
+	/**
+	 * Returns the top left coordinate of this rectangle.
+	 *
+	 * @return the coordinate topLeft
+	 */
+	Coordinate topLeft() {
 		return new Coordinate(left(), top());
 	}
 
 	/**
-	 * All corners set.
+	 * Returns a set of all corners of this rectangle in the form of Coordinate.
 	 *
-	 * @return the set
+	 * @return the set of corners
 	 */
 	public final Set<Coordinate> allCorners() {
 		Set<Coordinate> result = new HashSet<>();
@@ -93,6 +112,20 @@ public record Rectangle(Coordinate bottomLeft, Coordinate topRight) {
 		result.add(bottomRight());
 		result.add(topRight());
 		result.add(topLeft());
+		return result;
+	}
+
+	/**
+	 * Returns a set of all sides of this rectangle in the form of Line.
+	 *
+	 * @return the set of sides
+	 */
+	final Set<Line> allSides() {
+		Set<Line> result = new HashSet<>();
+		result.add(new Line(bottomLeft(), bottomRight()));
+		result.add(new Line(topLeft(), topRight()));
+		result.add(new Line(bottomLeft(), topLeft()));
+		result.add(new Line(bottomRight(), topRight()));
 		return result;
 	}
 

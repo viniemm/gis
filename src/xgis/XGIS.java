@@ -2,8 +2,7 @@ package xgis;
 
 
 import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * The class XGIS extends the functionality of class RectilinearRegion. XGIS determines if the given RectilinearRegion
@@ -36,31 +35,20 @@ public class XGIS extends RectilinearRegion {
 	 * @return boolean True if there exists a pair of connected rectangles else returns False.
 	 */
 	public boolean isConnected() {
-		return checkVertical() || checkHorizontal();
-	}
-
-	private boolean checkVertical() {
-		Set<BigDecimal> vert = new HashSet<>();
-		for (Rectangle rect : getRectangles()) {
-			if (vert.contains(rect.left()) || vert.contains(rect.right())) {
-				return true;
+		List<Line> lines = new ArrayList<>();
+		getRectangles().forEach((n) -> {
+			lines.addAll(n.allSides());
+		});
+		List<Coordinate> corners = new ArrayList<>();
+		getRectangles().forEach((n) -> {
+			corners.addAll(n.allCorners());
+		});
+		for (Coordinate c : corners) {
+			for (Line l : lines) {
+				if(l.in(c))
+					return true;
 			}
-			vert.add(rect.right());
-			vert.add(rect.left());
 		}
 		return false;
 	}
-
-	private boolean checkHorizontal() {
-		Set<BigDecimal> hori = new HashSet<>();
-		for (Rectangle rect : getRectangles()) {
-			if (hori.contains(rect.top()) || hori.contains(rect.bottom())) {
-				return true;
-			}
-			hori.add(rect.top());
-			hori.add(rect.bottom());
-		}
-		return false;
-	}
-
 }
