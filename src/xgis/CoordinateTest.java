@@ -1,7 +1,5 @@
-package test.xgis;
+package xgis.test;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import xgis.Coordinate;
 

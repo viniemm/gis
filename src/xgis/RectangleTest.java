@@ -1,9 +1,8 @@
-package test.xgis;
+package xgis.test;
 
 import org.junit.Test;
 import org.junit.Before;
 import org.junit.After;
-import org.junit.Test;
 import xgis.Rectangle;
 import xgis.Coordinate;
 

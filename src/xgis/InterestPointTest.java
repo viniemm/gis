@@ -1,4 +1,4 @@
-package test.xgis;
+package xgis.test;
 
 import org.junit.Test;
 import org.junit.Before;

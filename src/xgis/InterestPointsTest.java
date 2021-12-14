@@ -1,4 +1,4 @@
-package test.xgis;
+package xgis.test;
 
 import org.junit.Test;
 import xgis.InterestPoints;
@@ -27,7 +27,14 @@ public class InterestPointsTest {
 	 */
 	@Test
 	public void testGet() throws Exception {
-
+		InterestPoints.Builder<String> build = helper1();
+		build.addAll(interestPoints);
+		InterestPoints<String> built = build.build();
+		int[] randX = new Random().ints(20, -7, 8).toArray();
+		int[] randY = new Random().ints(20, -7, 8).toArray();
+		for (int i = 0; i < 20; i++) {
+			built.get(new Coordinate(new BigDecimal(randX[i]), new BigDecimal(randY[i])));
+		}
 	}
 
 	/**
@@ -35,7 +42,10 @@ public class InterestPointsTest {
 	 */
 	@Test
 	public void testInterestPoints() throws Exception {
-//TODO: Test goes here... 
+		InterestPoints.Builder<String> build = helper1();
+		build.addAll(interestPoints);
+		InterestPoints<String> built = build.build();
+		built.interestPoints();
 	}
 
 	/**
@@ -43,8 +53,10 @@ public class InterestPointsTest {
 	 */
 	@Test
 	public void testCount() throws Exception {
-
-//TODO: Test goes here... 
+		InterestPoints.Builder<String> build = helper1();
+		build.addAll(interestPoints);
+		InterestPoints<String> built = build.build();
+		built.interestPoints();
 	}
 
 	/**
@@ -52,7 +64,10 @@ public class InterestPointsTest {
 	 */
 	@Test
 	public void testToString() throws Exception {
-//		System.out.println(helper1().)
+		InterestPoints.Builder<String> build = helper1();
+		build.addAll(interestPoints);
+		InterestPoints<String> built = build.build();
+		System.out.println(built.toString());
 	}
 
 	List<InterestPoint<String>> interestPoints;
